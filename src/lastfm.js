@@ -131,7 +131,7 @@ let addSongContainer;
 
         // User total play count div
         const artistName = document.createElement('div');
-        artistName.innerText = `${trackInfo.track.artist.name} | ${'' ?? trackInfo.track.album.title}`
+        artistName.innerText = `${trackInfo.track.artist.name} | ${trackInfo?.track?.album?.title ?? ''}`
         artistName.setAttribute('id', 'modal-artist-name')
 
         // User total play count div
