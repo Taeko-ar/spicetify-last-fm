@@ -37,68 +37,42 @@ let addSongContainer;
         addLoginContainer = document.createElement("div");
         const loginContainer = document.createElement("div");
         loginContainer.setAttribute('id', 'login-global-div')
-        if (getLocalStorageDataFromKey(`lastFmUsername`)) {
-            loginContainer.remove()
-            let LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName
-            const loginContainer = document.createElement("div");
-            loginContainer.setAttribute('id', 'login-global-div')
-            const loginText = document.createElement("div");
-            loginText.innerText = `Hey ${LFMUsername}!`
-            loginText.style.cssText = 'padding-bottom: 10%;'
-            loginContainer.appendChild(loginText);
+        loginContainer.setAttribute('style', 'padding-bottom: 10%')
+        const loginText = document.createElement("div");
+        loginText.innerText = `Enter your Last.FM username`
+        const nameInput = document.createElement("input");
+        nameInput.style.cssText = 'display:flex;flex-direction: column;padding:15px; border-radius:15px; border:0; box-shadow:4px 4px 10px rgba(0,0,0,0.06);'
+        nameInput.placeholder = "Last.fm username.";
+        nameInput.required = true;
+        loginContainer.appendChild(nameInput);
 
-            const logOutButton = document.createElement("button");
-            logOutButton.innerText = "Log-out";
-            logOutButton.addEventListener("click", function (event) {
-                event.preventDefault();
-                localStorage.removeItem(`lastFmUsername`);
-                Spicetify.PopupModal.hide();
-            }, false);
+        const submitBtn = document.createElement("button");
+        submitBtn.innerText = "Save";
+        submitBtn.setAttribute('style', 'background-color: #1DB954;border-radius: 8px;border-style: none;box-sizing: border-box;color: #FFFFFF;cursor: pointer;display: inline-block;font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 14px;font-weight: 500;height: 40px;line-height: 20px;list-style: none;margin: 0;outline: none;padding: 10px 16px;position: relative;text-align: center;text-decoration: none;transition: color 100ms;vertical-align: baseline;user-select: none;-webkit-user-select: none;touch-action: manipulation;}.button-1:hover,.button-1:focus {background-color: #1DB954;')
+        submitBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            const name = nameInput.value.replace(/\n/g, "");
 
-            addLoginContainer.append(
-                loginText,
-                loginContainer,
-                logOutButton
-            );
-        } else if (!getLocalStorageDataFromKey(`lastFmUsername`)) {
-            loginContainer.remove()
-            const loginText = document.createElement("div");
-            loginText.innerText = `Enter your Last.FM username`
-            const nameInput = document.createElement("input");
-            nameInput.style.cssText = 'display: flex;flex-direction: column;'
-            nameInput.placeholder = "Last.fm username.";
-            nameInput.required = true;
-            loginContainer.appendChild(nameInput);
+            if (name === "" || !name) {
+                alert("The username can't be blank")
+                return;
+            }
 
-            const submitBtn = document.createElement("button");
-            submitBtn.innerText = "Save";
-            submitBtn.setAttribute('style', 'background-color: #EA4C89;border-radius: 8px;border-style: none;box-sizing: border-box;color: #FFFFFF;cursor: pointer;display: inline-block;font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 14px;font-weight: 500;height: 40px;line-height: 20px;list-style: none;margin: 0;outline: none;padding: 10px 16px;position: relative;text-align: center;text-decoration: none;transition: color 100ms;vertical-align: baseline;user-select: none;-webkit-user-select: none;touch-action: manipulation;}.button-1:hover,.button-1:focus {background-color: #F082AC;')
-            submitBtn.addEventListener("click", function (event) {
-                event.preventDefault();
-                const name = nameInput.value.replace(/\n/g, "");
+            localStorage.setItem(`lastFmUsername`, JSON.stringify({
+                userName: name,
+            }));
 
-                if (name === "" || !name) {
-                    alert("The username can't be blank")
-                    return;
-                }
+            Spicetify.PopupModal.hide();
+        }, false);
 
-                localStorage.setItem(`lastFmUsername`, JSON.stringify({
-                    userName: name,
-                }));
+        loginText.style.cssText = 'padding-bottom: 10%;'
+        loginContainer.appendChild(loginText);
 
-                Spicetify.PopupModal.hide();
-            }, false);
-
-            loginText.style.cssText = 'padding-bottom: 10%;'
-            loginContainer.appendChild(loginText);
-
-            addLoginContainer.append(
-                loginText,
-                loginContainer,
-                submitBtn,
-            );
-
-        }
+        addLoginContainer.append(
+            loginText,
+            loginContainer,
+            submitBtn,
+        );
 
         triggerModal();
     }
