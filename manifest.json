@@ -1,0 +1,11 @@
+{
+    "name": "Last.fm Stats",
+    "description": "Get info from your Last.fm account",
+    "preview": "images/song_stats.png",
+    "main": "src/lastfm.js",
+    "readme": "README.md",
+    "authors": [
+        { "name": "Lucas Bares", "url": "https://github.com/LucasBares" }
+    ],
+    "tags": ["lastfm"]
+}

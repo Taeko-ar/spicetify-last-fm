@@ -1,4 +1,4 @@
-# spicetify-last-fm
+# Spicetify Last.fm
 
 Get song information from a [Last.fm](https://www.last.fm/) account
 
