@@ -5,7 +5,7 @@
     "main": "src/lastfm.js",
     "readme": "README.md",
     "authors": [
-        { "name": "Lucas Bares", "url": "https://github.com/LucasBares" }
+        { "name": "Taeko", "url": "https://github.com/LucasBares" }
     ],
     "tags": ["lastfm"]
 }
