@@ -12,9 +12,16 @@ let addSongContainer;
         return;
     }
 
+    async function validateLocalStorage() {
+        if (!getLocalStorageDataFromKey(`lastFmUsername`)) {
+            alert("You need to add the username first! \nUser > Last.fm Stats > Register Username");
+            return;
+        }
+    }
+
     async function setLastFmUsername() {
-        const LFMUsername = '' ?? getLocalStorageDataFromKey(`lastFmUsername`).userName
-        const MODAL_TITLE = "Register Username";
+
+        const MODAL_TITLE = "Connect Last.Fm Account";
 
         const triggerModal = () => {
             Spicetify.PopupModal.display({
@@ -27,25 +34,51 @@ let addSongContainer;
             triggerModal();
             return;
         }
-
         addLoginContainer = document.createElement("div");
-        const nameContainer = document.createElement("div");
+        const loginContainer = document.createElement("div");
+        loginContainer.setAttribute('id', 'login-global-div')
+        if (getLocalStorageDataFromKey(`lastFmUsername`)) {
+            loginContainer.remove()
+            let LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName
+            const loginContainer = document.createElement("div");
+            loginContainer.setAttribute('id', 'login-global-div')
+            const loginText = document.createElement("div");
+            loginText.innerText = `Hey ${LFMUsername}!`
+            loginText.style.cssText = 'padding-bottom: 10%;'
+            loginContainer.appendChild(loginText);
 
-        const loginText = document.createElement("div");
-        if (!LFMUsername) {
+            const logOutButton = document.createElement("button");
+            logOutButton.innerText = "Log-out";
+            logOutButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                localStorage.removeItem(`lastFmUsername`);
+                Spicetify.PopupModal.hide();
+            }, false);
+
+            addLoginContainer.append(
+                loginText,
+                loginContainer,
+                logOutButton
+            );
+        } else if (!getLocalStorageDataFromKey(`lastFmUsername`)) {
+            loginContainer.remove()
+            const loginText = document.createElement("div");
             loginText.innerText = `Enter your Last.FM username`
             const nameInput = document.createElement("input");
             nameInput.style.cssText = 'display: flex;flex-direction: column;'
             nameInput.placeholder = "Last.fm username.";
-            nameContainer.appendChild(nameInput);
+            nameInput.required = true;
+            loginContainer.appendChild(nameInput);
 
             const submitBtn = document.createElement("button");
             submitBtn.innerText = "Save";
+            submitBtn.setAttribute('style', 'background-color: #EA4C89;border-radius: 8px;border-style: none;box-sizing: border-box;color: #FFFFFF;cursor: pointer;display: inline-block;font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 14px;font-weight: 500;height: 40px;line-height: 20px;list-style: none;margin: 0;outline: none;padding: 10px 16px;position: relative;text-align: center;text-decoration: none;transition: color 100ms;vertical-align: baseline;user-select: none;-webkit-user-select: none;touch-action: manipulation;}.button-1:hover,.button-1:focus {background-color: #F082AC;')
             submitBtn.addEventListener("click", function (event) {
                 event.preventDefault();
                 const name = nameInput.value.replace(/\n/g, "");
-                if (LFMUsername) {
-                    alert("That user is already registered!");
+
+                if (name === "" || !name) {
+                    alert("The username can't be blank")
                     return;
                 }
 
@@ -57,39 +90,21 @@ let addSongContainer;
             }, false);
 
             loginText.style.cssText = 'padding-bottom: 10%;'
-            nameContainer.appendChild(loginText);
+            loginContainer.appendChild(loginText);
 
             addLoginContainer.append(
                 loginText,
-                nameContainer,
+                loginContainer,
                 submitBtn,
             );
 
-        } else if (LFMUsername) {
-            loginText.innerText = `Hey ${LFMUsername}!`
-            loginText.style.cssText = 'padding-bottom: 10%;'
-            nameContainer.appendChild(loginText);
-
-            const logOutButton = document.createElement("button");
-            logOutButton.innerText = "Log-out";
-            logOutButton.addEventListener("click", function (event) {
-                event.preventDefault();
-
-                localStorage.removeItem(`lastFmUsername`);
-                Spicetify.PopupModal.hide();
-            }, false);
-
-            addLoginContainer.append(
-                loginText,
-                nameContainer,
-                logOutButton
-            );
         }
 
         triggerModal();
     }
 
     async function fetchCurrentSong() {
+        validateLocalStorage()
         const LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName ?? ''
         const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LFMUsername}&api_key=${LFMApiKey}&format=json`
         const initialReq = await fetch(url)
@@ -98,6 +113,7 @@ let addSongContainer;
     }
 
     async function fetchTrackInfo(artist, songName) {
+        validateLocalStorage()
         const LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName ?? ''
         const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${artist}&track=${songName}&format=json&username=${LFMUsername}`
         const initialReq = await fetch(url)
@@ -105,7 +121,7 @@ let addSongContainer;
         return res
     }
 
-    async function createModal(currentSong, trackInfo) {
+    async function createTrackModal(currentSong, trackInfo) {
         const modalTitle = `Stats for ${currentSong.name}`;
         const tagsList = trackInfo.track.toptags.tag.map(obj => obj.name);
         addSongContainer = document.createElement('div')
@@ -187,7 +203,7 @@ let addSongContainer;
         }
     }
 
-    async function updateModal(currentSong, trackInfo) {
+    async function updateTrackModal(currentSong, trackInfo) {
         const modalTitle = `Stats for ${currentSong.name}`;
 
         document.getElementById("modal-total-user-scrobbles").innerHTML = await trackInfo.track.userplaycount;
@@ -212,19 +228,14 @@ let addSongContainer;
     }
 
     async function getSongStats() {
-        const LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`)?.userName ?? ''
-
-        if (LFMUsername === '') {
-            alert("You need to add the username first! \nUser > Last.fm Stats > Register Username");
-            return;
-        }
+        validateLocalStorage()
         const currentSong = await fetchCurrentSong()
         const trackInfo = await fetchTrackInfo(currentSong.artist['#text'], currentSong.name)
 
         if (document.getElementById("modal-global-div")) {
-            await updateModal(currentSong, trackInfo)
+            await updateTrackModal(currentSong, trackInfo)
         } else {
-            await createModal(currentSong, trackInfo)
+            await createTrackModal(currentSong, trackInfo)
         }
     }
 
