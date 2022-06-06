@@ -77,18 +77,14 @@ let addSongContainer;
         triggerModal();
     }
 
-    async function fetchCurrentSong() {
-        validateLocalStorage()
-        const LFMUsername = '' ?? getLocalStorageDataFromKey(`lastFmUsername`).userName
+    async function fetchCurrentSong(LFMUsername) {
         const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LFMUsername}&api_key=${LFMApiKey}&format=json`
         const initialReq = await fetch(url)
         const res = await initialReq.json();
         return res.recenttracks.track[0]
     }
 
-    async function fetchTrackInfo(artist, songName) {
-        validateLocalStorage()
-        const LFMUsername = '' ?? getLocalStorageDataFromKey(`lastFmUsername`).userName
+    async function fetchTrackInfo(artist, songName, LFMUsername) {
         const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${artist}&track=${songName}&format=json&username=${LFMUsername}`
         const initialReq = await fetch(url)
         const res = await initialReq.json();
@@ -131,12 +127,12 @@ let addSongContainer;
 
         // Total artist play div
         const totalArtistPlayCount = document.createElement('div');
-        totalArtistPlayCount.innerText = `Total artist scrobbles: ${trackInfo.track.playcount}`
+        totalArtistPlayCount.innerText = `Total song scrobbles: ${trackInfo.track.playcount}`
         totalArtistPlayCount.setAttribute('id', 'modal-total-artist-scrobbles')
 
         // Total listeners div
         const totalListenersCount = document.createElement('div');
-        totalListenersCount.innerText = `Total listeners: ${trackInfo.track.listeners}`
+        totalListenersCount.innerText = `Total song listeners: ${trackInfo.track.listeners}`
         totalListenersCount.setAttribute('id', 'modal-total-listeners')
 
         // Link to song div
@@ -203,8 +199,9 @@ let addSongContainer;
 
     async function getSongStats() {
         validateLocalStorage()
-        const currentSong = await fetchCurrentSong()
-        const trackInfo = await fetchTrackInfo(currentSong.artist['#text'], currentSong.name)
+        let lastFmUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName ?? ''
+        let currentSong = await fetchCurrentSong(lastFmUsername)
+        let trackInfo = await fetchTrackInfo(currentSong.artist['#text'], currentSong.name, lastFmUsername)
 
         if (document.getElementById("modal-global-div")) {
             await updateTrackModal(currentSong, trackInfo)
