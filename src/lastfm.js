@@ -79,7 +79,7 @@ let addSongContainer;
 
     async function fetchCurrentSong() {
         validateLocalStorage()
-        const LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName ?? ''
+        const LFMUsername = '' ?? getLocalStorageDataFromKey(`lastFmUsername`).userName
         const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LFMUsername}&api_key=${LFMApiKey}&format=json`
         const initialReq = await fetch(url)
         const res = await initialReq.json();
@@ -88,7 +88,7 @@ let addSongContainer;
 
     async function fetchTrackInfo(artist, songName) {
         validateLocalStorage()
-        const LFMUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName ?? ''
+        const LFMUsername = '' ?? getLocalStorageDataFromKey(`lastFmUsername`).userName
         const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${artist}&track=${songName}&format=json&username=${LFMUsername}`
         const initialReq = await fetch(url)
         const res = await initialReq.json();
