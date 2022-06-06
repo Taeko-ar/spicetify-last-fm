@@ -12,8 +12,12 @@ let addSongContainer;
         return;
     }
 
+    async function getLocalStorageData(key, fallback) {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    };
+
     async function validateLocalStorage() {
-        if (!getLocalStorageDataFromKey(`lastFmUsername`)) {
+        if (!await getLocalStorageData(`lastFmUsername`)) {
             alert("You need to add the username first! \nUser > Last.fm Stats > Register Username");
             return;
         }
@@ -77,15 +81,15 @@ let addSongContainer;
         triggerModal();
     }
 
-    async function fetchCurrentSong(LFMUsername) {
-        const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LFMUsername}&api_key=${LFMApiKey}&format=json`
+    async function fetchCurrentSong(lastFmUsername) {
+        const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastFmUsername}&api_key=${LFMApiKey}&format=json`
         const initialReq = await fetch(url)
         const res = await initialReq.json();
         return res.recenttracks.track[0]
     }
 
-    async function fetchTrackInfo(artist, songName, LFMUsername) {
-        const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${artist}&track=${songName}&format=json&username=${LFMUsername}`
+    async function fetchTrackInfo(artist, songName, lastFmUsername) {
+        const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${artist}&track=${songName}&format=json&username=${lastFmUsername}`
         const initialReq = await fetch(url)
         const res = await initialReq.json();
         return res
@@ -198,10 +202,10 @@ let addSongContainer;
     }
 
     async function getSongStats() {
-        validateLocalStorage()
-        let lastFmUsername = getLocalStorageDataFromKey(`lastFmUsername`).userName ?? ''
-        let currentSong = await fetchCurrentSong(lastFmUsername)
-        let trackInfo = await fetchTrackInfo(currentSong.artist['#text'], currentSong.name, lastFmUsername)
+        await validateLocalStorage()
+        let lastFmUsername = await getLocalStorageData(`lastFmUsername`)
+        let currentSong = await fetchCurrentSong(lastFmUsername.userName)
+        let trackInfo = await fetchTrackInfo(currentSong.artist['#text'], currentSong.name, lastFmUsername.userName)
 
         if (document.getElementById("modal-global-div")) {
             await updateTrackModal(currentSong, trackInfo)
