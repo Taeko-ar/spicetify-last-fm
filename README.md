@@ -1,8 +1,6 @@
 # Spicetify Last.fm
 
-Get song information from a [Last.fm](https://www.last.fm/) account.
-
-This extension fetchs the current song scrobbling on Last.fm, it doesn't fetch the song from Spotify. (This is a To-do)
+Get song information from [Last.fm](https://www.last.fm/).
 
 ## How to setup
 
@@ -28,3 +26,22 @@ The modal shows:
 
 - [x] Fetch song info from Spotify
 - [ ] Add artist info
+
+## Installation
+
+Available from the [Spicetify Marketplace](https://github.com/CharlieS1103/spicetify-marketplace) or via direct install:
+
+Download `src/lastfm.js` into your Spicetify extensions folder.
+
+| **Platform** | **Path**                                                                               |
+|------------|------------------------------------------------------------------------------------------|
+| **Linux**      | `~/.config/spicetify/Extensions` or `$XDG_CONFIG_HOME/.config/spicetify/Extensions/` |
+| **MacOS**      | `~/.config/spicetify/Extensions` or `$SPICETIFY_CONFIG/Extensions`                   |
+| **Windows**    | `%userprofile%/.spicetify/Extensions/`                                               |
+
+Put the file into the correct folder and run the following command to install the extension:
+
+```powershell
+spicetify config extensions lastfm.js
+spicetify apply
+```
