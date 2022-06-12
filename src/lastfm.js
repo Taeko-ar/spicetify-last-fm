@@ -157,7 +157,16 @@ let addSongContainer;
         if (tagsList.length > 0) {
             const tagsDiv = document.createElement('div');
             tagsDiv.setAttribute('id', 'modal-tags')
-            tagsDiv.innerText = `Tags: ${tagsList.toString()}`
+            let tagList = tagsList.toString().split(",");
+            let tags = "";
+
+            for (let i=0; i< tagList.length; i++){
+                tagList[i] = tagList[i].charAt(0).toUpperCase() + tagList[i].slice(1);
+                tags += tagList[i] + " "
+              }
+
+
+            tagsDiv.innerText = `Tags: ${tags}`
             contentDiv.appendChild(tagsDiv)
         }
         contentDiv.appendChild(linkToSong)
