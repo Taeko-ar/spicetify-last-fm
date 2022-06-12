@@ -1,6 +1,7 @@
 # Spicetify Last.fm
 
-Get song information from a [Last.fm](https://www.last.fm/) account
+Get song information from a [Last.fm](https://www.last.fm/) account.
+
 This extension fetchs the current song scrobbling on Last.fm, it doesn't fetch the song from Spotify. (This is a To-do)
 
 ## How to setup
