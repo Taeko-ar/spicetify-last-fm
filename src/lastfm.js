@@ -3,7 +3,7 @@ let addSongContainer;
 
 (async function lastFmInfo() {
 
-    const { Platform } = Spicetify;
+    const { CosmosAsync, Platform } = Spicetify;
 
     const LFMApiKey = '83fb76a887a860800fd8719bd7412ada'
 
@@ -81,11 +81,9 @@ let addSongContainer;
         triggerModal();
     }
 
-    async function fetchCurrentSong(lastFmUsername) {
-        const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastFmUsername}&api_key=${LFMApiKey}&format=json`
-        const initialReq = await fetch(url)
-        const res = await initialReq.json();
-        return res.recenttracks.track[0]
+    async function fetchSong(song_id) {
+        const resp = await CosmosAsync.get('https://api.spotify.com/v1/tracks/' + song_id);
+        return { artist: resp.artists[0].name, name: resp.name, image: resp.album.images[0].url}
     }
 
     async function fetchTrackInfo(artist, songName, lastFmUsername) {
@@ -95,8 +93,8 @@ let addSongContainer;
         return res
     }
 
-    async function createTrackModal(currentSong, trackInfo) {
-        const modalTitle = `Stats for ${currentSong.name}`;
+    async function createTrackModal(song_image, song_name, trackInfo) {
+        const modalTitle = `Stats for ${song_name}`;
         const tagsList = trackInfo.track.toptags.tag.map(obj => obj.name);
         addSongContainer = document.createElement('div')
 
@@ -110,8 +108,10 @@ let addSongContainer;
         const imageDiv = document.createElement('img');
         imageDiv.setAttribute(
             'src',
-            currentSong.image[2]['#text'],
+            song_image,
         );
+        imageDiv.setAttribute('width', "175")
+        imageDiv.setAttribute('height', "175")
         imageDiv.setAttribute('style', 'float: left')
         imageDiv.setAttribute('id', 'modal-album-cover-img')
 
@@ -201,16 +201,16 @@ let addSongContainer;
         }
     }
 
-    async function getSongStats() {
+    async function getSongStats(song_id) {
         await validateLocalStorage()
         let lastFmUsername = await getLocalStorageData(`lastFmUsername`)
-        let currentSong = await fetchCurrentSong(lastFmUsername.userName)
-        let trackInfo = await fetchTrackInfo(currentSong.artist['#text'], currentSong.name, lastFmUsername.userName)
+        let currentSong = await fetchSong(song_id)
+        let trackInfo = await fetchTrackInfo(currentSong.artist, currentSong.name, lastFmUsername.userName)
 
         if (document.getElementById("modal-global-div")) {
-            await updateTrackModal(currentSong, trackInfo)
+            await updateTrackModal(currentSong.image, currentSong.name, trackInfo)
         } else {
-            await createTrackModal(currentSong, trackInfo)
+            await createTrackModal(currentSong.image, currentSong.name, trackInfo)
         }
     }
 
@@ -223,7 +223,10 @@ let addSongContainer;
     new Spicetify.ContextMenu.Item(
         "Last.FM Song Stats",
         (uris) => {
-            getSongStats(Spicetify.Player.data.track.metadata.title);
+            let songUri = uris[0]
+            let song_id = songUri.split(":")[2]
+
+            getSongStats(song_id);
         },
         (uris) => {
             if (uris.length != 1) return false;
