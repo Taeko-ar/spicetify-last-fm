@@ -6,10 +6,16 @@ let addSongContainer;
     const { CosmosAsync, Platform } = Spicetify;
 
     const LFMApiKey = '83fb76a887a860800fd8719bd7412ada'
+    
+    let RegisteredUsername = "Register username";
 
     if (!Platform) {
         setTimeout(lastFmInfo, 300);
         return;
+    }
+    
+    if (Spicetify.LocalStorage.get("lastFmUsername") !== null) {
+        RegisteredUsername = JSON.parse(Spicetify.LocalStorage.get("lastFmUsername")).userName;
     }
 
     async function getLocalStorageData(key, fallback) {
@@ -223,7 +229,7 @@ let addSongContainer;
         }
     }
 
-    const registerUsernameMenuItem = new Spicetify.Menu.Item("Register username", false, async () => {
+    const registerUsernameMenuItem = new Spicetify.Menu.Item(RegisteredUsername, false, async () => {
         await setLastFmUsername();
     });
 
