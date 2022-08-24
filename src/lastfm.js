@@ -1,6 +1,3 @@
-let addLoginContainer;
-let addSongContainer;
-
 (async function lastFmInfo() {
 
     const { CosmosAsync, Platform } = Spicetify;
@@ -8,6 +5,9 @@ let addSongContainer;
     const LFMApiKey = '83fb76a887a860800fd8719bd7412ada'
     
     let RegisteredUsername = "Register username";
+    
+    let addLoginContainer;
+    let addSongContainer;
 
     if (!Platform) {
         setTimeout(lastFmInfo, 300);
@@ -52,13 +52,13 @@ let addSongContainer;
         loginText.innerText = `Enter your Last.FM username`
         const nameInput = document.createElement("input");
         nameInput.style.cssText = 'display:flex;flex-direction: column;padding:15px; border-radius:15px; border:0; box-shadow:4px 4px 10px rgba(0,0,0,0.06);'
-        nameInput.placeholder = "Last.fm username.";
+        nameInput.placeholder = RegisteredUsername;
         nameInput.required = true;
         loginContainer.appendChild(nameInput);
 
         const submitBtn = document.createElement("button");
         submitBtn.innerText = "Save";
-        submitBtn.setAttribute('style', 'background-color: #1DB954;border-radius: 8px;border-style: none;box-sizing: border-box;color: #FFFFFF;cursor: pointer;display: inline-block;font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 14px;font-weight: 500;height: 40px;line-height: 20px;list-style: none;margin: 0;outline: none;padding: 10px 16px;position: relative;text-align: center;text-decoration: none;transition: color 100ms;vertical-align: baseline;user-select: none;-webkit-user-select: none;touch-action: manipulation;}.button-1:hover,.button-1:focus {background-color: #1DB954;')
+        submitBtn.setAttribute('style', 'background-color: var(--spice-button);border-radius: 8px;border-style: none;box-sizing: border-box;color: #FFFFFF;cursor: pointer;display: inline-block;font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 14px;font-weight: 500;height: 40px;line-height: 20px;list-style: none;margin: 0;outline: none;padding: 10px 16px;position: relative;text-align: center;text-decoration: none;transition: color 100ms;vertical-align: baseline;user-select: none;-webkit-user-select: none;touch-action: manipulation;}.button-1:hover,.button-1:focus {background-color: #1DB954;')
         submitBtn.addEventListener("click", function (event) {
             event.preventDefault();
             const name = nameInput.value.replace(/\n/g, "");
