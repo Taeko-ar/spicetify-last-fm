@@ -25,7 +25,6 @@ The modal shows:
 ## To-do list
 
 - [x] Fetch song info from Spotify
-- [ ] Add artist info
 
 ## Installation
 
