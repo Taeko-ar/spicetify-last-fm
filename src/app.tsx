@@ -225,7 +225,7 @@ async function main() {
                 const song = await fetchSong(song_id);
                 if (song.error) return;
 
-                const trackReq = await fetch(`https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${encodeURIComponent(song.artist)}&track=${encodeURIComponent(song.name)}&format=json&username=${encodeURIComponent(RegisteredUsername)}`);
+                const trackReq = await fetch(`https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LFMApiKey}&artist=${encodeURIComponent(song.artist)}&track=${encodeURIComponent(song.name)}&autocorrect=1&format=json&username=${encodeURIComponent(RegisteredUsername)}`);
                 const trackRes = await trackReq.json();
 
                 if (trackRes.error || !trackRes.track) return Spicetify.showNotification(`Last.fm Error: ${trackRes.message}`);
