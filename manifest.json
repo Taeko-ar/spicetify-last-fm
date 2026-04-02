@@ -1,0 +1,11 @@
+{
+    "name": "Last.fm Stats",
+    "description": "Get info from your Last.fm account",
+    "preview": "images/song_stats.png",
+    "main": "dist/lastfm.js",
+    "readme": "README.md",
+    "authors": [
+        { "name": "Taeko", "url": "https://github.com/Taeko-ar" }
+    ],
+    "tags": ["lastfm"]
+}
