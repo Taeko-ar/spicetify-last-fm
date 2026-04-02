@@ -118,19 +118,23 @@ async function main() {
         const tags = topTagsArray.map((t: any) => t.name.charAt(0).toUpperCase() + t.name.slice(1)).join(", ");
 
         modal.innerHTML = `
-            <div style="font-size: 1.5em; font-weight: bold; color: var(--spice-text); border-bottom: 1px solid var(--spice-card); padding-bottom: 16px; margin-bottom: 16px;">Stats for ${currentSong.name}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--spice-card); padding-bottom: 16px; margin-bottom: 16px;">
+                <div style="font-size: 1.5em; font-weight: bold; color: var(--spice-text);">Stats for ${currentSong.name}</div>
+                <button id="lastfm-stats-native-close" style="background: transparent; color: var(--spice-subtext); border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                    <svg role="img" height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1.47 1.47a.75.75 0 0 1 1.06 0L8 6.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L9.06 8l5.47 5.47a.75.75 0 1 1-1.06 1.06L8 9.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L6.94 8 1.47 2.53a.75.75 0 0 1 0-1.06z"></path></svg>
+                </button>
+            </div>
             <div class="lastfm-stats-global" style="margin: 0; display: flex; gap: 24px;">
                 ${currentSong.image ? `<img src="${currentSong.image}" style="border-radius: 8px; width: 180px; height: 180px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" alt="Cover Art" />` : ''}
                 <div class="lastfm-stats-content" style="display: flex; flex-direction: column; gap: 8px; justify-content: center; font-size: 1.05em;">
                     <div style="font-size: 1.25em; font-weight: bold; margin-bottom: 4px; color: var(--spice-text);">${trackInfo?.track?.artist?.name || 'Unknown'} | ${trackInfo?.track?.album?.title || 'Unknown Title'}</div>
-                    <div style="color: var(--spice-text);">Personal total scrobbles: <strong style="color: var(--spice-button); font-size: 1.1em;">${trackInfo?.track?.userplaycount || 0}</strong></div>
-                    <div>Total song scrobbles: <span style="color: var(--spice-subtext)">${trackInfo?.track?.playcount || 0}</span></div>
-                    <div>Total song listeners: <span style="color: var(--spice-subtext)">${trackInfo?.track?.listeners || 0}</span></div>
+                    <div style="color: var(--spice-text);">Personal total scrobbles: <strong style="color: var(--spice-button); font-size: 1.1em;">${Number(trackInfo?.track?.userplaycount || 0).toLocaleString()}</strong></div>
+                    <div>Total song scrobbles: <span style="color: var(--spice-subtext)">${Number(trackInfo?.track?.playcount || 0).toLocaleString()}</span></div>
+                    <div>Total song listeners: <span style="color: var(--spice-subtext)">${Number(trackInfo?.track?.listeners || 0).toLocaleString()}</span></div>
                     ${tags ? `<div style="margin-top: 8px; color: var(--spice-subtext); font-size: 0.9em; line-height: 1.4;">Tags: ${tags}</div>` : ''}
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--spice-card); padding-top: 16px;">
-                <button id="lastfm-stats-native-close" style="background: transparent; color: var(--spice-text); border: none; padding: 12px 24px; border-radius: 32px; font-weight: bold; cursor: pointer; transition: transform 0.1s ease;">Close</button>
                 <a href="${trackInfo?.track?.url || "#"}" target="_blank" style="background: var(--spice-button); color: var(--spice-button-text, #FFF); text-decoration: none; padding: 12px 24px; border-radius: 32px; font-weight: bold; display: inline-block; transition: transform 0.1s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Open on Last.fm</a>
             </div>
         `;
@@ -144,8 +148,8 @@ async function main() {
         });
 
         const closeBtn = modal.querySelector('#lastfm-stats-native-close') as HTMLButtonElement;
-        closeBtn.onmouseover = () => closeBtn.style.transform = 'scale(1.04)';
-        closeBtn.onmouseout = () => closeBtn.style.transform = 'scale(1)';
+        closeBtn.onmouseover = () => { closeBtn.style.color = 'var(--spice-text)'; closeBtn.style.background = 'var(--spice-card)'; };
+        closeBtn.onmouseout = () => { closeBtn.style.color = 'var(--spice-subtext)'; closeBtn.style.background = 'transparent'; };
 
         const close = () => {
             overlay.style.opacity = '0';
@@ -238,11 +242,12 @@ async function main() {
 
     new Spicetify.ContextMenu.Item("Last.fm Settings", () => setLastFmUsername(),
         (uris) => uris.length === 1 && Spicetify.URI.fromString(uris[0]).type === Spicetify.URI.Type.PROFILE,
-        "settings" as any
+        `<svg role="img" height="16" width="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.89c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg>` as any
     ).register();
 
     new Spicetify.ContextMenu.Item("Last.FM Song Stats", (uris) => getSongStats(uris[0].split(":")[2]),
-        (uris) => uris.length === 1 && Spicetify.URI.fromString(uris[0]).type === Spicetify.URI.Type.TRACK
+        (uris) => uris.length === 1 && Spicetify.URI.fromString(uris[0]).type === Spicetify.URI.Type.TRACK,
+        `<svg role="img" height="16" width="16" viewBox="0 0 24 24" fill="currentColor"><path d="${MUSIC_SVG_PATH}"></path></svg>` as any
     ).register();
 
     function injectProfileButton() {
